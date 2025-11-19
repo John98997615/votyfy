@@ -80,78 +80,93 @@ class _ConcourDetailScreenState extends State<ConcourDetailScreen> {
     );
   }
 
-  Widget _buildConcourHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.concour.description != null) ...[
-            Text(
-              widget.concour.description!,
-              style: const TextStyle(fontSize: 16),
+  // presentation/screens/concour_detail_screen.dart
+// REMPLACEZ SEULEMENT LA MÉTHODE _buildConcourHeader() :
+
+Widget _buildConcourHeader() {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // DESCRIPTION AVEC DÉFILEMENT
+        if (widget.concour.description != null) ...[
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 120, // Hauteur maximale avant défilement
             ),
-            const SizedBox(height: 12),
-          ],
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Prix par vote: ${PriceCalculator.formatPrice(widget.concour.pricePerVote)}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppConstants.accentColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Statut: ${_getStatusText(widget.concour.status)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: _getStatusColor(widget.concour.status),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+            child: Scrollbar(
+              child: SingleChildScrollView(
+                child: Text(
+                  widget.concour.description!,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-              if (widget.concour.totalVotes != null) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppConstants.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        
+        // INFORMATIONS STATIQUES (sans défilement)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Prix par vote: ${PriceCalculator.formatPrice(widget.concour.pricePerVote)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppConstants.accentColor,
+                    fontWeight: FontWeight.w500,
                   ),
-                  child: Text(
-                    '${widget.concour.totalVotes} votes',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppConstants.primaryColor,
-                      fontWeight: FontWeight.w500,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Statut: ${_getStatusText(widget.concour.status)}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _getStatusColor(widget.concour.status),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
+            ),
+            if (widget.concour.totalVotes != null) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppConstants.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${widget.concour.totalVotes} votes',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppConstants.primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildCandidatesList() {
     return Consumer<CandidateProvider>(
