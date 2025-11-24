@@ -5,6 +5,7 @@ import 'package:votyfy/core/constants/app_constants.dart';
 import 'package:votyfy/presentation/providers/candidate_provider.dart';
 import 'package:votyfy/presentation/providers/concour_provider.dart';
 import 'package:votyfy/presentation/providers/vote_provider.dart';
+import 'package:votyfy/presentation/screens/search_screen.dart';
 import 'package:votyfy/presentation/screens/splash_screen.dart';
 
 void main() {
@@ -96,6 +97,9 @@ class VotyfyApp extends StatelessWidget {
           ),
         ),
         home: const SplashScreen(),
+        routes: {
+          '/search': (context) => const SearchScreen(),
+        },
       ),
     );
   }

@@ -37,21 +37,42 @@ class Candidate extends Equatable {
   }
 
   String get fullName => '$firstName $lastName';
-  
+
+  // data/models/candidate.dart
+  // CORRECTION DÉFINITIVE :
+
   String get fullProfilePhotoUrl {
+    if (profilePhoto.isEmpty) return '';
+
+    print('🖼️ Chemin original: $profilePhoto');
+
+    // Si URL complète
     if (profilePhoto.startsWith('http')) return profilePhoto;
-    return '${AppConstants.baseUrl.replaceFirst('/api', '')}$profilePhoto';
+
+    // CORRECTION DÉFINITIVE - Supprimer le slash initial
+    String cleanPath = profilePhoto;
+    if (cleanPath.startsWith('/')) {
+      cleanPath = cleanPath.substring(
+        1,
+      ); // Supprimer seulement le premier slash
+    }
+
+    // URL finale SANS double slash
+    final url = 'http://192.168.1.147:8000/$cleanPath';
+    print('✅ URL CORRIGÉE: $url');
+
+    return url;
   }
 
   @override
   List<Object?> get props => [
-        id,
-        lastName,
-        firstName,
-        nationality,
-        fullDescription,
-        profilePhoto,
-        votesCount,
-        concourId,
-      ];
+    id,
+    lastName,
+    firstName,
+    nationality,
+    fullDescription,
+    profilePhoto,
+    votesCount,
+    concourId,
+  ];
 }

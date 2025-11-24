@@ -7,6 +7,8 @@ import 'package:votyfy/core/widgets/loading_indicator.dart';
 import 'package:votyfy/data/models/concour.dart';
 import 'package:votyfy/presentation/providers/concour_provider.dart';
 import 'package:votyfy/presentation/screens/concour_detail_screen.dart';
+import 'package:votyfy/presentation/screens/live_results_screen.dart';
+import 'package:votyfy/presentation/screens/search_screen.dart';
 import 'package:votyfy/presentation/widgets/concour_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,9 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _initializeData() async {
     // Attendre que le widget soit complètement construit
     await Future.delayed(Duration.zero);
-    
+
     if (!mounted) return;
-    
+
     try {
       final provider = Provider.of<ConcourProvider>(context, listen: false);
       await provider.loadConcours();
@@ -47,9 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onConcourTap(Concour concour) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ConcourDetailScreen(concour: concour),
-      ),
+      MaterialPageRoute(builder: (_) => ConcourDetailScreen(concour: concour)),
     );
   }
 
@@ -68,7 +68,25 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Concours Disponibles'),
         backgroundColor: AppConstants.primaryColor,
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: _openSearch,
+            tooltip: 'Rechercher un concours',
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _onRefresh,
+            tooltip: 'Actualiser la liste des concours',
+          ),
+        ],
       ),
       body: BackgroundContainer(
         child: !_isInitialized
@@ -81,6 +99,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  // Ajoutez ces méthodes dans la classe _HomeScreenState :
+  void _openSearch() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const SearchScreen()));
+  }
+
+  void _viewLiveResults(Concour concour) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => LiveResultsScreen(concour: concour)),
+    );
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
 
   Widget _buildContent(ConcourProvider provider) {
     // Afficher le loading seulement lors du premier chargement
@@ -108,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: provider.concours.length,
+        // Dans la ListView.builder, mettez à jour le ConcourCard :
         itemBuilder: (context, index) {
           final concour = provider.concours[index];
           return Padding(
@@ -115,6 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ConcourCard(
               concour: concour,
               onTap: () => _onConcourTap(concour),
+              onViewResults: (concour.totalVotes ?? 0) > 0
+                  ? () => _viewLiveResults(concour)
+                  : null,
             ),
           );
         },
@@ -156,7 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppConstants.primaryColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
               ),
               child: const Text('Réessayer'),
             ),
@@ -191,10 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Text(
               'Revenez plus tard pour découvrir de nouveaux concours',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 24),
             ElevatedButton(

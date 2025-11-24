@@ -40,7 +40,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
   Future<void> _processPayment() async {
     try {
       // Simulation du traitement du paiement
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 3));
 
       final paymentUrl = widget.paymentData['payment_url'];
       
@@ -65,7 +65,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
       });
 
       // Naviguer vers le reçu après un délai
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 3));
       
       if (mounted) {
         Navigator.of(context).pushReplacement(

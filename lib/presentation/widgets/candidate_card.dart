@@ -1,6 +1,5 @@
 // presentation/widgets/candidate_card.dart
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:votyfy/core/constants/app_constants.dart';
 import 'package:votyfy/data/models/candidate.dart';
 
@@ -17,25 +16,24 @@ class CandidateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Photo du candidat
-              _buildCandidateImage(),
+              // Avatar avec effet premium
+              _buildPremiumAvatar(),
               const SizedBox(width: 16),
-              // Informations du candidat
-              Expanded(
-                child: _buildCandidateInfo(),
-              ),
-              // Votes count
-              _buildVotesBadge(),
+              // Informations
+              Expanded(child: _buildCandidateInfo()),
+              // Badge votes avec effet
+              _buildPremiumVotesBadge(),
             ],
           ),
         ),
@@ -43,87 +41,118 @@ class CandidateCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCandidateImage() {
+  Widget _buildPremiumAvatar() {
     return Container(
       width: 70,
       height: 70,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(35),
-        color: Colors.grey.shade200,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(35),
-        child: CachedNetworkImage(
-          imageUrl: candidate.fullProfilePhotoUrl,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => _buildPlaceholderIcon(),
-          placeholder: (context, url) => _buildLoadingPlaceholder(),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppConstants.primaryColor.withOpacity(0.8),
+            AppConstants.secondaryColor.withOpacity(0.6),
+          ],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppConstants.primaryColor.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildPlaceholderIcon() {
-    return Center(
-      child: Icon(
-        Icons.person,
-        size: 30,
-        color: Colors.grey.shade400,
-      ),
-    );
-  }
-
-  Widget _buildLoadingPlaceholder() {
-    return Center(
-      child: CircularProgressIndicator(
-        strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation<Color>(AppConstants.primaryColor),
+      child: const Center(
+        child: Icon(
+          Icons.person,
+          size: 32,
+          color: Colors.white,
+        ),
       ),
     );
   }
 
   Widget _buildCandidateInfo() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Nom complet
+        // Nom avec effet
         Text(
           candidate.fullName,
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.bold,
             color: AppConstants.textColor,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         // Nationalité
-        Text(
-          candidate.nationality,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey.shade600,
-          ),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.blue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Icon(Icons.flag, size: 12, color: Colors.blue.shade600),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              candidate.nationality,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
-        // Description
-        Text(
-          candidate.fullDescription,
-          style: const TextStyle(fontSize: 14),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        // Description avec fond
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            candidate.fullDescription,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade700,
+              height: 1.3,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildVotesBadge() {
+  Widget _buildPremiumVotesBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppConstants.primaryColor.withOpacity(0.1),
+        gradient: LinearGradient(
+          colors: [
+            AppConstants.primaryColor,
+            AppConstants.primaryColor.withOpacity(0.8),
+          ],
+        ),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppConstants.primaryColor.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -133,14 +162,15 @@ class CandidateCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: AppConstants.primaryColor,
+              color: Colors.white,
             ),
           ),
           Text(
             'vote${candidate.votesCount > 1 ? 's' : ''}',
             style: TextStyle(
               fontSize: 10,
-              color: AppConstants.primaryColor.withOpacity(0.7),
+              color: Colors.white.withOpacity(0.9),
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

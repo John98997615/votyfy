@@ -70,7 +70,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           SnackBar(
             content: Text('Erreur de paiement: ${e.toString()}'),
             backgroundColor: AppConstants.errorColor,
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 7),
           ),
         );
       }
